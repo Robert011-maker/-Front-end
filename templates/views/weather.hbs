@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {{>head}}
+    <style>
+        .wrapper{
+            background: linear-gradient(to top right,rgb(50, 197, 223),rgba(0, 0, 0, 0.4));
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        {{>navbar}}
+        <div class="input">
+            <h3 class="date"></h3>
+             <button class="btn1"><img src="https://img.icons8.com/material-two-tone/24/000000/search.png"/></button>
+        <input id="box"  type="text"  autocomplete="on" required>
+       <h3 class="time"></h3>
+        </div>
+        <div class="weather-box">
+            <div class="content">
+                <div class="humidity">
+            <p id="hum"></p>
+            <p id="sp"></p></div>
+             <div class="min-max">
+            <p id="min"></p>
+             <p id="max"></p>
+            </div>
+            <p id="city"></p>
+            <div class="temp">
+            <p id='temp'></p>
+           <img id="image" src="#"/>
+           </div>
+             </div>
+        </div>
+        {{>footer}}
+    </div>
+</body>
+<script>
+    const api={
+    key:'c7f5a6b7d7a56b7078cdbc5575d2bdfe',
+    url:"https://api.openweathermap.org/data/2.5/weather"
+}
+
+    const btn=document.querySelector('.btn1');
+    const box_search=document.getElementById('box');
+    btn.addEventListener('click',()=>{
+        btn.style.opacity=0;
+    })
+const value=document.querySelector('.temp');
+box_search.addEventListener('keypress',async(event)=>{
+
+      if(event.keyCode==13){
+          const display=document.querySelector('.content').style.opacity=1;
+          document.querySelector('.weather-box').style.opacity=1;
+          const city = box_search.value;
+         console.log(city);
+          if(box_search.value===""){
+            value.innerHTML="Plz enter city name";
+          }
+          else{
+              
+              try{
+                 const r=await fetch(`${api.url}?q=${city}&units=metric&appid=${api.key}`) ;
+                 const response=await r.json();
+                 console.log(response);  
+                 document.querySelector('#hum').innerHTML=`Humidity:  ${response.main.humidity}`;  
+                 document.querySelector('#sp').innerHTML=`Wind-Speed: ${response.wind.speed}`;
+                document.querySelector('#min').innerHTML=`${response.main.temp_min}&deg;C (min)`;
+                document.querySelector('#max').innerHTML=`${response.main.temp_max}&deg;C (max)`;
+                document.querySelector('#city').innerHTML=`${response.name},${response.sys.country}`;
+                document.querySelector('#temp').innerHTML=`${response.main.temp}&deg;C`;
+                if(response.weather[0].main==='Clouds'){
+                    document.querySelector('#image').src="https://img.icons8.com/fluent/48/000000/cloud.png";
+                }
+                else if(response.weather[0].main==='Rain'){
+                     document.querySelector('#image').src="https://img.icons8.com/officel/16/000000/rain.png";
+                }
+                else if(response.weather[0].main==='Mist'){
+                     document.querySelector('#image').src="https://img.icons8.com/fluent/48/000000/fog-day.png";
+                }
+                else if(response.weather[0].main==='Clear'){
+                    document.querySelector('#image').src="https://img.icons8.com/fluent/48/000000/sun.png";
+                }
+                else if(response.weather[0].main==='Haze'){
+                    document.querySelector('#image').src="https://img.icons8.com/fluent/48/000000/foggy-night-1.png";
+                }
+                else{
+                      document.querySelector('#image').src="https://img.icons8.com/fluent/48/000000/foggy-night-1.png";
+                }
+              }
+              catch{
+                 value.innerHTML="plz enter valid city name";
+              }
+          }
+      }
+})
+
+const dateTime=new Date();
+let hour=dateTime.getHours();
+let min=dateTime.getMinutes();
+let sec=dateTime.getSeconds();
+let date=dateTime.getDate();
+let yr= dateTime.getFullYear();
+let month=dateTime.getMonth();
+let day =dateTime.getDay();
+const week=['Sunday','Monday','Tuesday','Wednesday','Thrusday','Friday','Saturday'];
+const month1=['Jan','Feb','Mar','Apr','May','June','July','Aug','Sep','Oct','Nov','Dec'];
+
+let setDate=document.querySelector('.date');
+setDate.innerHTML=`${date} ${month1[month]} (${week[day]}),${yr}`;
+
+
+let samay=()=>{
+const time1=new Date();
+let x=time1.toLocaleTimeString();
+document.querySelector('.time').innerHTML=`${x}`;}
+setInterval(samay,1000);
+
+
+
+
+
+</script>
+</html>
